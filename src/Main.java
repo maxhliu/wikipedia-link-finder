@@ -1,15 +1,6 @@
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.HttpRequest;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 
 public class Main {
 
@@ -39,12 +30,12 @@ public class Main {
     }
 
     public static void main (String args[]) throws UnirestException {
-        Searcher start = new ForwardSearcher("Danny");
-        Searcher end = new BackwardSearcher("Illuminati");
+        Searcher start = new ForwardSearcher("Trigonometry");
+        Searcher end = new BackwardSearcher("Adolf Hitler");
         ArrayList<String> path = getPath(start, end);
         while (path == null) {
             if (compareSize(start, end) >= 0) {
-                start.iterate();w
+                start.iterate();
             } else {
                 end.iterate();
             }
