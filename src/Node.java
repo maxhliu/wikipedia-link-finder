@@ -4,6 +4,13 @@ public class Node {
     private String value;
     private Node parent;
     private ArrayList<Node> children;
+    static ArrayList<String> toStrings(ArrayList<Node> nodes) {
+        ArrayList<String> strings = new ArrayList<>();
+        for (Node n : nodes) {
+            strings.add(n.getValue());
+        }
+        return strings;
+    }
     static ArrayList<Node> toNodes(ArrayList<String> strings) {
         ArrayList<Node> nodes = new ArrayList<>();
         for (String s : strings) {

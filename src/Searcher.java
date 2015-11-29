@@ -6,9 +6,17 @@ import java.util.ArrayList;
  * Created by Max on 15-11-28.
  */
 public abstract class Searcher {
-//    private int depth;
     private ArrayList<Node> currentLevel;
     private Node root;
+
+//    void iterate() {
+//        try {
+//            currentLevel = Node.toNodes(getLinks(Node.toStrings(currentLevel)));
+//        } catch (UnirestException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     void iterate() {
         for (Node n : currentLevel) {
             ArrayList<Node> articles = null;
@@ -21,8 +29,8 @@ public abstract class Searcher {
             currentLevel = articles;
         }
     }
+
     Searcher(String value) {
-//        depth = 0;
         root = new Node(value);
         currentLevel = new ArrayList<>();
         currentLevel.add(root);
@@ -33,6 +41,7 @@ public abstract class Searcher {
     ArrayList<Node> getCurrentLevel() {
         return currentLevel;
     }
+    abstract ArrayList<String> getLinks(ArrayList<String> articles) throws UnirestException;
     abstract ArrayList<String> getLinks(String article) throws UnirestException;
     abstract public ArrayList<String> tracePath(Node n);
 }
