@@ -4,6 +4,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import jdk.nashorn.internal.parser.JSONParser;
+import net.minidev.json.JSONArray;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -57,27 +58,48 @@ public class Main {
 
     static ArrayList<String> getURLs(ArrayList<String> path) {
         ArrayList<String> URLs = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        int i, length = path.size() - 1;
-        for (i = 0; i < length; i++) {
-            sb.append(path.get(i) + "|");
-        }
-        sb.append(path.get(i));
-        try {
-            // /w/api.php?action=query&prop=info&format=json&inprop=url&titles=Kanye%20West%7CJesus
-            HttpResponse<JsonNode> jsonResponse = Unirest.get("https://en.wikipedia.org/w/api.php")
-                    .queryString("action", "query")
-                    .queryString("prop", "info")
-                    .queryString("format", "json")
-                    .queryString("titles", sb)
-                    .queryString("inprop", "url")
-                    .asJson();
-            URLs = JsonPath.read(jsonResponse.getBody().toString(), "$..fullurl");
-        } catch (UnirestException e) {
-            e.printStackTrace();
+        for (String s : path) {
+            HttpResponse<JsonNode> jsonResponse = null;
+            try {
+                jsonResponse = Unirest.get("https://en.wikipedia.org/w/api.php")
+                        .queryString("action", "query")
+                        .queryString("prop", "info")
+                        .queryString("format", "json")
+                        .queryString("titles", s)
+                        .queryString("inprop", "url")
+                        .asJson();
+            } catch (UnirestException e) {
+                e.printStackTrace();
+            }
+            String URL = ((JSONArray) JsonPath.read(jsonResponse.getBody().toString(), "$..fullurl")).get(0).toString();
+            URLs.add(URL);
         }
         return URLs;
     }
+
+//    static ArrayList<String> getURLs(ArrayList<String> path) {
+//        ArrayList<String> URLs = new ArrayList<>();
+//        StringBuilder sb = new StringBuilder();
+//        int i, length = path.size() - 1;
+//        for (i = 0; i < length; i++) {
+//            sb.append(path.get(i) + "|");
+//        }
+//        sb.append(path.get(i));
+//        try {
+//            // /w/api.php?action=query&prop=info&format=json&inprop=url&titles=Kanye%20West%7CJesus
+//            HttpResponse<JsonNode> jsonResponse = Unirest.get("https://en.wikipedia.org/w/api.php")
+//                    .queryString("action", "query")
+//                    .queryString("prop", "info")
+//                    .queryString("format", "json")
+//                    .queryString("titles", sb)
+//                    .queryString("inprop", "url")
+//                    .asJson();
+//            URLs = JsonPath.read(jsonResponse.getBody().toString(), "$..fullurl");
+//        } catch (UnirestException e) {
+//            e.printStackTrace();
+//        }
+//        return URLs;
+//    }
 
     static void startSearch(Path filePath) throws IOException {
         Scanner s = new Scanner(filePath.toFile());
