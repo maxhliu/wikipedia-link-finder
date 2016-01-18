@@ -6,6 +6,8 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
 
+import java.io.InvalidClassException;
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -48,7 +50,7 @@ public class ForwardSearcher extends Searcher {
         return backlinks;
     }
 
-    ArrayList<String> getLinks(String article) throws UnirestException {
+    ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException {
         ArrayList<String> forwardLinks;
         HttpResponse<JsonNode> jsonResponse;
         //establish forward links
@@ -60,6 +62,9 @@ public class ForwardSearcher extends Searcher {
                 .queryString("pllimit", "500")
                 .asJson();
         forwardLinks = JsonPath.read(jsonResponse.getBody().toString(), "$..links..title");
+        if (forwardLinks.isEmpty()) {
+            throw new InvalidClassException("lol");
+        }
         while (true) {
             Map<String, Object> continueBlock;
             try {

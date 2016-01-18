@@ -1,5 +1,6 @@
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import java.io.InvalidClassException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
@@ -21,7 +22,7 @@ public abstract class Searcher {
 //        }
 //    }
 
-    void iterate() throws TimeoutException {
+    void iterate() throws TimeoutException, InvalidClassException {
         for (Node n : currentLevel) {
             if (System.currentTimeMillis() - startTime > 20000) {
                 throw new TimeoutException();
@@ -49,6 +50,6 @@ public abstract class Searcher {
         return currentLevel;
     }
     abstract ArrayList<String> getLinks(ArrayList<String> articles) throws UnirestException;
-    abstract ArrayList<String> getLinks(String article) throws UnirestException;
+    abstract ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException;
     abstract public ArrayList<String> tracePath(Node n);
 }

@@ -7,9 +7,7 @@ import jdk.nashorn.internal.parser.JSONParser;
 import net.minidev.json.JSONArray;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -45,7 +43,7 @@ public class Main {
     }
 
     //the method which actually finds the path
-    static ArrayList<String> search(String a, String b) throws TimeoutException {
+    static ArrayList<String> search(String a, String b) throws TimeoutException, InvalidClassException {
         Searcher start = new ForwardSearcher(a);
         Searcher end = new BackwardSearcher(b);
         long startTime = System.currentTimeMillis();
@@ -145,6 +143,9 @@ public class Main {
                             startSearch(path.resolve(changed));
                         } catch (TimeoutException e) {
                             FileUtils.writeStringToFile(path.resolve(changed).resolveSibling("done.txt").toFile(),
+                                    Double.toString(Math.random()));
+                        } catch (InvalidClassException e) {
+                            FileUtils.writeStringToFile(path.resolve(changed).resolveSibling("invalid.txt").toFile(),
                                     Double.toString(Math.random()));
                         }
                     }
