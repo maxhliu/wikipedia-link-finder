@@ -111,6 +111,11 @@ public class Main {
 
     //method which is called whenever you need to start a new search
     static void startSearch(Path filePath) throws IOException, TimeoutException {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Scanner s = new Scanner(filePath.toFile());
         //gets the actual path
         ArrayList<String> path = search(s.nextLine(), s.nextLine());
