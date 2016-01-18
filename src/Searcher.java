@@ -1,11 +1,15 @@
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Max on 15-11-28.
  */
 public abstract class Searcher {
+
+    public long startTime = 0;
+
     private ArrayList<Node> currentLevel;
     private Node root;
 
@@ -17,8 +21,11 @@ public abstract class Searcher {
 //        }
 //    }
 
-    void iterate() {
+    void iterate() throws TimeoutException {
         for (Node n : currentLevel) {
+            if (System.currentTimeMillis() - startTime > 20000) {
+                throw new TimeoutException();
+            }
             ArrayList<Node> articles = null;
             try {
                 articles = Node.toNodes(getLinks(n.getValue()));
@@ -30,7 +37,7 @@ public abstract class Searcher {
         }
     }
 
-    Searcher(String value) {
+        Searcher(String value) {
         root = new Node(value);
         currentLevel = new ArrayList<>();
         currentLevel.add(root);

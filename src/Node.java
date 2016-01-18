@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class Node {
+
     private String value;
     private Node parent;
     private ArrayList<Node> children;

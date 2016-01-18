@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
 
+    //sees whether it is more efficient to find backlinks or forward links
     static int compareSize(Searcher a, Searcher b) {
         if (a.getSize() > b.getSize()) {
             return -1;
@@ -26,6 +28,7 @@ public class Main {
         }
     }
 
+    //gets the path in linear arraylist form from the two searchers
     static ArrayList<String> getPath(Searcher a, Searcher b) {
         for (Node n1 : a.getCurrentLevel()) {
             for (Node n2 : b.getCurrentLevel()) {
@@ -41,9 +44,13 @@ public class Main {
         return null;
     }
 
-    static ArrayList<String> search(String a, String b) {
+    //the method which actually finds the path
+    static ArrayList<String> search(String a, String b) throws TimeoutException {
         Searcher start = new ForwardSearcher(a);
         Searcher end = new BackwardSearcher(b);
+        long startTime = System.currentTimeMillis();
+        start.startTime = startTime;
+        end.startTime = startTime;
         ArrayList<String> path = getPath(start, end);
         while (path == null) {
             if (compareSize(start, end) >= 0) {
@@ -56,6 +63,7 @@ public class Main {
         return path;
     }
 
+    //gets urls of articles. Used to get urls of the path
     static ArrayList<String> getURLs(ArrayList<String> path) {
         ArrayList<String> URLs = new ArrayList<>();
         for (String s : path) {
@@ -101,11 +109,19 @@ public class Main {
 //        return URLs;
 //    }
 
-    static void startSearch(Path filePath) throws IOException {
+    //method which is called whenever you need to start a new search
+    static void startSearch(Path filePath) throws IOException, TimeoutException {
         Scanner s = new Scanner(filePath.toFile());
+        //gets the actual path
         ArrayList<String> path = search(s.nextLine(), s.nextLine());
-        FileUtils.writeLines(filePath.resolveSibling("test.txt").toFile(), path);
-        FileUtils.writeLines(filePath.resolveSibling("test2.txt").toFile(), getURLs(path));
+        //writes the path
+        FileUtils.writeLines(filePath.resolveSibling("outputTitles.txt").toFile(), path);
+        //gets the urls of the path to have active links
+        FileUtils.writeLines(filePath.resolveSibling("outputLinks.txt").toFile(), getURLs(path));
+        //print the path for debugging
+        for (String string : path) {
+            System.out.println(string);
+        }
     }
 
     public static void main (String args[]) throws UnirestException, IOException, InterruptedException {
@@ -118,9 +134,14 @@ public class Main {
                 final WatchKey wk = watchService.take();
                 for (WatchEvent<?> event : wk.pollEvents()) {
                     final Path changed = (Path) event.context();
-                    if (changed.endsWith("link.txt")) {
+                    if (changed.endsWith("inputTitles.txt")) {
                         //get file contents and do the search
-                        startSearch(path.resolve(changed));
+                        try {
+                            startSearch(path.resolve(changed));
+                        } catch (TimeoutException e) {
+                            FileUtils.writeStringToFile(path.resolve(changed).resolveSibling("done.txt").toFile(),
+                                    Double.toString(Math.random()));
+                        }
                     }
                 }
                 boolean valid = wk.reset();
