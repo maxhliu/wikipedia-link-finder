@@ -129,7 +129,9 @@ public class Main {
 
     public static void main (String args[]) throws UnirestException, IOException, InterruptedException {
         //path is "/Users/dannyliu/Documents/Wikiproject/textfiles/link.txt"
-        final Path path = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Desktop");
+        System.out.println("Java has run. Cwd is : " + System.getProperty("user.dir"));
+        final Path path = Paths.get(System.getProperty("user.dir") + "/textfiles/");
+//        final Path path = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Desktop");
 //        final Path path = Paths.get("/Users/dannyliu/Documents/Wikiproject/textfiles/");
         try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
             final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);

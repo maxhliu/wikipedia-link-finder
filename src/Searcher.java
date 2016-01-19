@@ -24,9 +24,6 @@ public abstract class Searcher {
 
     void iterate() throws TimeoutException, InvalidClassException {
         for (Node n : currentLevel) {
-            if (System.currentTimeMillis() - startTime > 20000) {
-                throw new TimeoutException();
-            }
             ArrayList<Node> articles = null;
             try {
                 articles = Node.toNodes(getLinks(n.getValue()));
@@ -50,6 +47,6 @@ public abstract class Searcher {
         return currentLevel;
     }
     abstract ArrayList<String> getLinks(ArrayList<String> articles) throws UnirestException;
-    abstract ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException;
+    abstract ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException, TimeoutException;
     abstract public ArrayList<String> tracePath(Node n);
 }

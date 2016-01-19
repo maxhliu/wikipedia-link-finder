@@ -11,6 +11,7 @@ import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Max on 15-11-28.
@@ -50,7 +51,7 @@ public class ForwardSearcher extends Searcher {
         return backlinks;
     }
 
-    ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException {
+    ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException, TimeoutException {
         ArrayList<String> forwardLinks;
         HttpResponse<JsonNode> jsonResponse;
         //establish forward links
@@ -66,6 +67,9 @@ public class ForwardSearcher extends Searcher {
             throw new InvalidClassException("lol");
         }
         while (true) {
+            if (System.currentTimeMillis() - startTime > 20000) {
+                throw new TimeoutException();
+            }
             Map<String, Object> continueBlock;
             try {
                 continueBlock = JsonPath.read(jsonResponse.getBody().toString(), "$.continue");

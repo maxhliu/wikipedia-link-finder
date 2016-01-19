@@ -9,6 +9,7 @@ import com.mashape.unirest.request.HttpRequest;
 import java.io.InvalidClassException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Max on 15-11-28.
@@ -48,7 +49,7 @@ public class BackwardSearcher extends Searcher {
         return backlinks;
     }
 
-    ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException {
+    ArrayList<String> getLinks(String article) throws UnirestException, InvalidClassException, TimeoutException {
         ArrayList <String> backlinks;
         HttpResponse<JsonNode> jsonResponse;
         //establish forward links
@@ -65,6 +66,9 @@ public class BackwardSearcher extends Searcher {
             throw new InvalidClassException("lol");
         }
         while (true) {
+            if (System.currentTimeMillis() - startTime > 20000) {
+                throw new TimeoutException();
+            }
             Map<String, Object> continueBlock;
             try {
                 continueBlock = JsonPath.read(jsonResponse.getBody().toString(), "$.continue");
